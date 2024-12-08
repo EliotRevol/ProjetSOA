@@ -1,0 +1,88 @@
+package fr.insa.soa.Rest_TDProject;
+import java.sql.*;
+
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
+
+@Path("user/{id}")
+public class UserRessource {
+
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public User getUser(@PathParam("id")int id) throws SQLException, ClassNotFoundException {
+		
+		ResultSet result = null ; 
+		Connection co = Sql_co.connection();
+		User user = null;
+		
+		/*try {
+			co = Sql_co.connection();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} */
+		
+		
+		String Query= "SELECT * FROM User WHERE id=" + id; 
+		try {
+			Statement stm = co.createStatement() ;
+			result = stm.executeQuery(Query) ; 
+			
+			if(result.next()) {
+				int Userid = result.getInt("id") ; 
+				String username = result.getString("username") ; 
+				String password = result.getString("password") ; 
+				int type = result.getInt("type") ; 
+				
+				user = new User(Userid,username,password,type); 
+				
+			}
+			
+			
+			
+		} catch (SQLException e) {
+			
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		return user ; 
+		
+	}
+	
+	@Path("/create")
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	public void addUser(User user) throws SQLException, ClassNotFoundException {
+		System.out.println("0");
+		
+		Connection co = Sql_co.connection();
+		System.out.println("1");
+		/*String Query= "INSERT INTO User (id, username, password, type) VALUES"
+				+ " ("+user.getId()+", "+user.getUsername()+", "+user.getPassword()+", "
+				+user.getType()+")";*/
+		String Query = "INSERT INTO User (id, username, password, type) VALUES (" 
+	              + user.getId() + ", '" 
+	              + user.getUsername() + "', '" 
+	              + user.getPassword() + "', '" 
+	              + user.getType() + "')";
+
+		
+		System.out.println("2: "+user.getId());
+		System.out.println(Query);
+	try {
+		
+		Statement stm = co.createStatement() ;
+		stm.executeUpdate(Query); 
+		
+		
+		
+		
+	} catch (SQLException e) {
+		
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	
+	
+}
+}
